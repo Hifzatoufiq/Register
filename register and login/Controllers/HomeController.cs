@@ -38,7 +38,7 @@ namespace register_and_login.Controllers
                 obj.name= us.name;
                 obj.password= us.password;
                 obj.Role = "user";
-                hh.register1.Add(obj);
+                hh.register.Add(obj);
                 hh.SaveChanges();
                 return RedirectToAction("Index");
                
@@ -52,7 +52,7 @@ namespace register_and_login.Controllers
         [HttpPost]
         public IActionResult login(login u)
         {
-            var obj = hh.register1.FirstOrDefault(x=>x.email == u.email && x.password == u.password);
+            var obj = hh.register.FirstOrDefault(x=>x.email == u.email && x.password == u.password);
             if (obj != null)
             {
                 if (obj.Role == "user")
@@ -73,6 +73,29 @@ namespace register_and_login.Controllers
         public IActionResult dashboard()
         {
             return View();
+        }
+
+        public IActionResult create()
+        {
+            var tt=hh.category.ToList();
+            ViewBag.categories=tt;
+            return View();
+        }
+        [HttpPost]
+        public IActionResult create(product ff)
+        {
+            if (ModelState.IsValid)
+            {
+                hh.Add(ff);
+                hh.SaveChanges();
+                return RedirectToAction("list");
+            }
+            return View();
+        }
+        public IActionResult list()
+        {
+            var dd=hh.product1.ToList();
+            return View(dd);
         }
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

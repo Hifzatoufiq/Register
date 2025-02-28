@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using register_and_login.Models;
 
@@ -10,9 +11,11 @@ using register_and_login.Models;
 namespace register_and_login.Migrations
 {
     [DbContext(typeof(Mycontext))]
-    partial class MycontextModelSnapshot : ModelSnapshot
+    [Migration("20250227063637_hel")]
+    partial class hel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -89,9 +92,6 @@ namespace register_and_login.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("id"));
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
                     b.Property<string>("description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -105,20 +105,7 @@ namespace register_and_login.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("CategoryId");
-
                     b.ToTable("product1");
-                });
-
-            modelBuilder.Entity("register_and_login.Models.product", b =>
-                {
-                    b.HasOne("register_and_login.Models.category", "category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("category");
                 });
 #pragma warning restore 612, 618
         }
