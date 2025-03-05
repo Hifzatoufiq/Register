@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using register_and_login.Models;
 
@@ -7,22 +8,28 @@ namespace register_and_login.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        
         readonly Mycontext hh;
-        public HomeController(ILogger<HomeController> logger, Mycontext dd)
+        private readonly string _uploadsFolderPath;
+        public HomeController(IWebHostEnvironment env, Mycontext dd)
         {
-            _logger = logger;
-          hh= dd;
+            _uploadsFolderPath = Path.Combine(env.WebRootPath, "images");
+            hh = dd;
         }
 
         public IActionResult Index()
         {
-            return View();
+
+            var f = hh.product1.ToList();
+            return View(f);
+           
         }
 
         public IActionResult Privacy()
         {
-            return View();
+            var f = hh.product1.ToList();
+            return View(f);
+           
         }
         public IActionResult Register()
         {
@@ -82,15 +89,53 @@ namespace register_and_login.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult create(product ff)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(productvm model)
         {
             if (ModelState.IsValid)
             {
-                hh.Add(ff);
-                hh.SaveChanges();
-                return RedirectToAction("list");
+                if (model.image != null && model.image.Length > 0)
+                {
+                    // Create the uploads folder if it doesn't exist
+                    if (!Directory.Exists(_uploadsFolderPath))
+                    {
+                        Directory.CreateDirectory(_uploadsFolderPath);
+                    }
+
+                    // Generate a unique filename
+                    var fileName = Path.GetFileName(model.image.FileName);
+                    var filePath = Path.Combine(_uploadsFolderPath, fileName);
+
+                    // Save the file
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await model.image.CopyToAsync(stream);
+                    }
+
+                    // Create and save the product
+                    var product = new product
+                    {
+                        price = model.price,
+                        name = model.name,
+                        description = model.description,
+                        imagepath = fileName,
+                        CategoryId = model.CategoryId
+                    };
+
+                    hh.product1.Add(product);
+                    await hh.SaveChangesAsync();
+
+                    TempData["Message"] = "File uploaded successfully!";
+                    return RedirectToAction(nameof(Privacy));
+                }
+                else
+                {
+                    ModelState.AddModelError("", "No file selected!");
+                }
             }
-            return View();
+
+            // If model state is invalid, redisplay the form with validation errors
+            return View(model);
         }
         public IActionResult list()
         {

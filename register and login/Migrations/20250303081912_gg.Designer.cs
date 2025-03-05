@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using register_and_login.Models;
 
@@ -10,9 +11,11 @@ using register_and_login.Models;
 namespace register_and_login.Migrations
 {
     [DbContext(typeof(Mycontext))]
-    partial class MycontextModelSnapshot : ModelSnapshot
+    [Migration("20250303081912_gg")]
+    partial class gg
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
